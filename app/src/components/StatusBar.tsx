@@ -1,8 +1,13 @@
 
 import { useState, useEffect } from 'react';
+import { useSettings } from '../context/SettingsContext';
+import { useHistory } from '../context/HistoryContext';
+import { Palette, Type, Clock, TerminalSquare } from 'lucide-react';
 
 const StatusBar = () => {
     const [time, setTime] = useState('');
+    const { settings } = useSettings();
+    const { historyItems } = useHistory();
 
     useEffect(() => {
         const updateTime = () => {
@@ -23,22 +28,34 @@ const StatusBar = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 16px',
-            fontSize: '12px',
+            fontSize: '11px',
             color: 'var(--color-ghost)',
             fontFamily: 'var(--font-mono)',
-            userSelect: 'none'
+            userSelect: 'none',
+            zIndex: 10
         }}>
-            <div style={{ display: 'flex', gap: '16px' }}>
-                <span style={{ color: 'var(--color-electric-cyan)' }}>~/projects/fr</span>
-                <span>✨ Flow State</span>
+            <div style={{ display: 'flex', gap: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} title="Current Theme">
+                    <Palette size={12} color="var(--color-electric-cyan)" />
+                    <span>{settings.theme}</span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} title="Font Configuration">
+                    <Type size={12} color="var(--color-neon-mint)" />
+                    <span>{settings.fontFamily} · {settings.fontSize}px</span>
+                </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '16px' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ color: 'var(--color-terminal-green)' }}>●</span>
-                    main
-                </span>
-                <span>{time}</span>
+            <div style={{ display: 'flex', gap: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} title="Total Commands in History">
+                    <TerminalSquare size={12} color="var(--color-sunset-orange)" />
+                    <span>{historyItems.length} cmds</span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Clock size={12} />
+                    <span>{time}</span>
+                </div>
             </div>
         </div>
     );
