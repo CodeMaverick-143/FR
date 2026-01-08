@@ -1,49 +1,31 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
+import Terminal from "./components/Terminal";
+import SidePanel from "./components/SidePanel";
+import StatusBar from "./components/StatusBar";
+import Settings from "./components/Settings";
+import History from "./components/History";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [activePanel, setActivePanel] = useState<'none' | 'history' | 'settings'>('none');
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  const togglePanel = (panel: 'history' | 'settings') => {
+    setActivePanel(current => current === panel ? 'none' : panel);
+  };
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
+    <main className="app-container">
+      <div className="main-content">
+        <SidePanel
+          onHistoryClick={() => togglePanel('history')}
+          onSettingsClick={() => togglePanel('settings')}
+          activePanel={activePanel}
         />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
+        {activePanel === 'settings' && <Settings onClose={() => setActivePanel('none')} />}
+        {activePanel === 'history' && <History onClose={() => setActivePanel('none')} />}
+        <Terminal />
+      </div>
+      <StatusBar />
     </main>
   );
 }
